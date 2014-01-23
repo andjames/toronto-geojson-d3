@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Toronto in D3</title>
+		<script src="http://d3js.org/d3.v3.min.js"></script>
+		<script src="http://d3js.org/topojson.v1.min.js"></script>
+		<script src="http://d3js.org/queue.v1.min.js"></script>
+		<style type="text/css">
+			/* No style rules here yet */		
+					
+			.q0-9 { fill:rgb(247,251,255); }
+			.q1-9 { fill:rgb(222,235,247); }
+			.q2-9 { fill:rgb(198,219,239); }
+			.q3-9 { fill:rgb(158,202,225); }
+			.q4-9 { fill:rgb(107,174,214); }
+			.q5-9 { fill:rgb(66,146,198); }
+			.q6-9 { fill:rgb(33,113,181); }
+			.q7-9 { fill:rgb(8,81,156); }
+			.q8-9 { fill:rgb(8,48,107); }
+			.q9-9 { fill:rgb(7,44,105); }
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript">
+
+			//Width and height
+			var w = 500;
+			var h = 500;
+			var x = -14870;
+			var y = 7670;
+			var scale = 70000;
+
+			//Define map projection
+			var projection = d3.geo.albers()
+								  // .translate([w/2, h/2])
+								   .translate([x, y])
+								   .scale([scale]);
+
+			//Define path generator
+			var path = d3.geo.path()
+							 .projection(projection);
+
+			//Create SVG element
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+
+			//Load in GeoJSON data
+
+/** queue test
+var color = d3.scale.threshold()
+    .domain([.02, .04, .06, .08, .10])
+    .range(["#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"]);
+
+queue()
+    .defer(d3.json, "/raw/toronto.geojson")
+    .defer(d3.tsv, "unemployment.tsv")
+    .await(ready);
+
+function ready(error, toronto, unemployment) {
+  var rateById = {};
+
+  unemployment.forEach(function(d) { rateById[d.id] = +d.rate; });
+
+  svg.append("g")
+      .attr("class", "nbhoods")
+    .selectAll("path")
+      .data(topojson.feature(toronto, toronto.objects.features).features)
+    .enter().append("path")
+      .attr("d", path)
+      .style("fill", function(d) { return color(rateById[d.id]); });
+
+  svg.append("path")
+      .datum(topojson.mesh(toronto, toronto.objects.features, function(a, b) { return a.id !== b.id; }))
+      .attr("class", "states")
+      .attr("d", path);
+}
+//end queue test **/
+
+	d3.json("raw/toronto.geojson", function(json) {
+	
+			//	console.log(json.features[0].properties.FULLHOOD);
+				//Bind data and create one path per GeoJSON feature
+				svg.selectAll("path")
+				   .data(json.features)
+				   .enter()
+				   .append("path")
+				//   .attr('id',function(d, i){
+				//   		return json.features[i].properties.HOODNUM;
+				//   })
+				  .attr("d", path)
+				//   .attr('name', function(d, i){
+				// 		return json.features[i].properties.HOOD;
+				//   })
+				   .attr('class', function(){
+				   		return "q"+ Math.round(Math.random()*10) +'-9'; 
+				   })
+				   .style('stroke', 'silver');
+				   //.style("fill", "steelblue")
+			});
+			console.log("q"+ Math.round(Math.random()*9) +'-9');
+		</script>
+	</body>
+</html>
